@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6229894b12c338f47a24f735ac0cedf4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - Protect1go: {instanceID: 0}
+  - Protect2go: {instanceID: 0}
+  - Protect3go: {instanceID: 0}
+  - lightPrefab: {fileID: 1161175046452736, guid: 0829b7fcaf92c9747842480948442cc1,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
