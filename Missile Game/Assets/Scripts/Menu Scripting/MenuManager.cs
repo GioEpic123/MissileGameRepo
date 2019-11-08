@@ -63,9 +63,11 @@ public class MenuManager : MonoBehaviour
     {
         Debug.Log("Restarting");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1;
 
     }
     
+
     //For Main Menu --- --- --- ---
 
     //Starts The First Level
@@ -74,6 +76,18 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Starting First Level");
         SceneManager.LoadScene("Level0");
 
+    }
+
+    public void thatOneLevelMadeForTestingIThinkICalledItDevOrSomething()
+    {
+        Debug.Log("Through the wormhole...");
+        SceneManager.LoadScene("TestLevl");
+    }
+
+    public void loadInfoLevel()
+    {
+        Debug.Log("Going to Info Scene");
+        SceneManager.LoadScene("Info");
     }
 
     //Quits Game

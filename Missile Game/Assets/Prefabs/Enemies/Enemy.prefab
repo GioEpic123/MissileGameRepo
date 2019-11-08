@@ -126,7 +126,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   forwardForce: 1.5
+  FINALFORCE: 0
   rotationSpeed: 3
+  redLight: {r: 0, g: 0, b: 0, a: 0}
+  redMaterial: {r: 0, g: 0, b: 0, a: 0}
+  destroyed: 0
+  powerFreeze: {fileID: 0}
+  iceChance: 35
   closestLight: {fileID: 0}
   Prot1: {fileID: 0}
   Prot2: {fileID: 0}
@@ -148,7 +154,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 0.3066038, b: 0.3066038, a: 1}
   m_Intensity: 1
-  m_Range: 10
+  m_Range: 18.6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

@@ -6,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 2f;
     //Makes "Sensitivity" A thing
     public float sensitivity = 2f;
-    //Makes This a controller
 
     //references the camera as "eyes"
     public GameObject eyes, barrel;
@@ -15,8 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public GameManager gameManager;
 
     //Clamp Declaration
-    public float upClamp = 30f;
-    public float downClamp = 30f;
+    public float upClamp = 40f;
+    public float downClamp = 100f;
 
     //References Movement here
     private float rotx, roty, gunRoty, vertVelocity;
@@ -24,15 +23,6 @@ public class PlayerMovement : MonoBehaviour
     private bool hasJumped;
     private bool isCrouched;
 
-    float getRoty()
-    {
-        return roty;
-    }
-
-    void Start()
-    {
-       
-    }
     void Update()
     {
         Movement();
@@ -48,11 +38,7 @@ public class PlayerMovement : MonoBehaviour
             //Rotation inputted, and clamped between two values
             rotx = Input.GetAxis("Mouse X") * sensitivity;
             roty -= Input.GetAxis("Mouse Y") * sensitivity;
-            roty = Mathf.Clamp(roty, -upClamp, downClamp);
-
-            //Rotation strictly for the Gun Object
-            gunRoty = roty;
-            gunRoty = Mathf.Clamp(gunRoty, 0, 90f);
+            roty = Mathf.Clamp(roty, -downClamp, upClamp);
 
             //rotates actual character about the X axis
             transform.Rotate(0, rotx, 0);

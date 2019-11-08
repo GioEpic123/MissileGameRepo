@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class target : MonoBehaviour
+public class target : MonoBehaviour, IDamagable<float>
 {
+    public GameManager gameManager;
     //For use with taking damage. Each enemy prefab has their own modified health
     public float health = 50f;
     //For use of movement. ForwardForce is their movement speed,
     //rotationSpeed is how fast they change direction.
     public float forwardForce = 2f;
+    public float FINALFORCE;
     public float rotationSpeed = 3f;
+    public Color redLight;
+    public Color redMaterial;
 
-    //private GameManager gameManager;
+    public void OnTakeDamage(float DamageTaken)
+    {
+        TakeDamage(DamageTaken);
+    }
 
-  
+
     //Movement Is in Update, Moves towards player at FORWARDFORCE speed
     void Update()
     {
@@ -21,16 +28,21 @@ public class target : MonoBehaviour
         if (!(closestLight.gameObject.activeSelf))
         {
             Seek();
+            Debug.Log(gameObject.name + " is Re-Seeking");
         }
-        
-        
-        
+
+
         //A smoother version of LookAt, instead using Slerp to smoothly transition rotation.
         //Float rotationSpeed affects how fast they change direction.
         Quaternion targetRotation = Quaternion.LookRotation(closestLight.transform.position - transform.position);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         //Move In forward direction, towards closestLight
         transform.position += transform.forward * forwardForce * Time.deltaTime;
+
+        if (gameObject.transform.position.y <= -5)
+        {
+            Destroy(gameObject);
+        }
     }
 
 
@@ -42,37 +54,74 @@ public class target : MonoBehaviour
         {
             Die();
         }
-
     }
-
+    public bool destroyed = false;
+    public int nextChance = 0;
+    public GameObject powerFreeze;
+    public GameObject powerFastFire;
+    public GameObject powerLightRepair;
     //Kills the Enemy when conditions are met, and incriments Player's Score
     void Die()
     {
+        destroyed = true;
         Destroy(gameObject);
         GameManager.Instance.scoreCount++;
+        spawnDrop();
+
     }
 
+    void spawnDrop()
+    {
+        if (nextChance <= 25)//25%
+        {
+            GameObject freeze = Instantiate(powerFreeze);
+            freeze.transform.position = gameObject.transform.position;
+        }
+        else if (nextChance <= 40)//15%
+        {
+            GameObject fastFire = Instantiate(powerFastFire);
+            fastFire.transform.position = gameObject.transform.position;
+        }
+        else if(nextChance <= 45)//%5
+        {
+            GameObject lightPower = Instantiate(powerLightRepair);
+            lightPower.transform.position = gameObject.transform.position;
+        }
+    }
 
+    IEnumerator checkForChance()
+    {
+        yield return new WaitForSeconds(2f);
+        nextChance = gameManager.location.Next(0, 101); //uses the random generator used in randomized spawning, to find a chance to drop ice.
+
+    }
     //RUDIMENTARY AI--Enemy will seek the closest of the 3 lights, Prot1,Prot2, & Prot3
 
     //Start- Will assign all Protection Game Objects(Prot1go, etc...) and their transforms as Prots(Prot1, etc)  
 
     void Start()
     {
-        //gameManager = GameManager.Instance;
-        //Rather than trying to grab the values from a prefab that doesnt have them, this code gathers the
-        //values from an instance that exists in the scene. Instance is made in Gamemanager
-        Prot1go = GameManager.Instance.Protect1go;
-        Prot2go = GameManager.Instance.Protect2go;
-        Prot3go = GameManager.Instance.Protect3go;
-
+        gameManager = GameManager.Instance;
+        //Finds all Protection Objects, assigns them, and then looks for them.
+        Prot1go = gameManager.Protect1go;
+        Prot2go = gameManager.Protect2go;
+        Prot3go = gameManager.Protect3go;
         Prot1 = Prot1go.transform;
         Prot2 = Prot2go.transform;
         Prot3 = Prot3go.transform;
-
         Seek();
+        //Things That Must Be Initialized After Spawning...
+        FINALFORCE = forwardForce;
+        redLight = gameObject.GetComponent<Light>().color;
+        redMaterial = gameObject.GetComponent<Renderer>().material.color;
+        powerFreeze = GameManager.Instance.powerFreezeGo;
+        powerFastFire = GameManager.Instance.powerFastFireGo;
+        powerLightRepair = GameManager.Instance.powerLightRepair;
+        StartCoroutine(checkForChance());
     }
-    
+
+
+
     //Transforms for position tracking
     public Transform closestLight;
     public Transform Prot1;
@@ -83,62 +132,46 @@ public class target : MonoBehaviour
     public GameObject Prot2go;
     public GameObject Prot3go;
 
-    bool SaidMissing = false;
-    void SayMissing()
-    {
-        if (!SaidMissing)
-        {
-            Debug.Log("Somethings Missing..");
-            SaidMissing = true;
-        }
-    }
-
     void Seek()
     {
         if (Prot1go.activeSelf && Prot2go.activeSelf && Prot3go.activeSelf)
         {
             seekIfAll();
-            
         }
         else //If ALL 3 aren't Present,
         {
-            
-            SayMissing();
-            //If 1 & 2
+            //If 1...
             if (Prot1go.activeSelf)
             {
-                if (Prot2go.activeSelf)
+                if (Prot2go.activeSelf)//If 1 & 2
                 {
-                    seekIfOneTwo();
+                    seekIfTwo(Prot1, Prot2);
                 }
-                else if (Prot3go.activeSelf)
+                else if (Prot3go.activeSelf)//If 1 & 3
                 {
-                    seekIfOneThree();
+                    seekIfTwo(Prot1, Prot3);
                 }
-                else
+                else //Must just be 1 then
                 {
                     closestLight = Prot1;
                 }
             }
             else
             {
-                if (Prot2go.activeSelf)
+                if (Prot2go.activeSelf)//If not 1, then 2..
                 {
-                    if (Prot3go.activeSelf)
+                    if (Prot3go.activeSelf)//If 2 & 3
                     {
-                        seekIfTwoThree();
+                        seekIfTwo(Prot2, Prot3);
                     }
-                    else
+                    else //Must just be 2 then
                     {
                         closestLight = Prot2;
                     }
                 }
-                else
+                else //Must just be 3 then
                 {
-                    if (Prot3go.activeSelf)
-                    {
-                        closestLight = Prot3;
-                    }
+                    closestLight = Prot3;
                 }
             }
 
@@ -173,49 +206,17 @@ public class target : MonoBehaviour
             }
         }
     }
-
-    public float distBetween2;
-    public float distBetween1;
-
-    void seekIfOneTwo()
+    void seekIfTwo(Transform first, Transform second)
     {
-        if (Vector3.Distance(Prot1.position, transform.position) >= Vector3.Distance(Prot2.position, transform.position))
+        if (Vector3.Distance(first.position, transform.position) >= Vector3.Distance(second.position, transform.position))
         {
-            closestLight = Prot1;
-           
-        }
-        else if (distBetween1 < distBetween2)
-        {
-            
-            closestLight = Prot2;
-        }
-    }
-
-    void seekIfTwoThree()
-    {
-        if (Vector3.Distance(Prot2.position, transform.position) >= Vector3.Distance(Prot3.position, transform.position))
-        {
-            closestLight = Prot3;
+            closestLight = second;
         }
         else
         {
-            closestLight = Prot2;
+            closestLight = first;
         }
     }
 
-    void seekIfOneThree()
-    {
-        
-
-        if (Vector3.Distance(Prot1.position, transform.position) >= Vector3.Distance(Prot3.position, transform.position))
-        {
-            closestLight = Prot3;
-        }
-        else
-        {
-            closestLight = Prot1;
-        }
-        
-    }
 }
 

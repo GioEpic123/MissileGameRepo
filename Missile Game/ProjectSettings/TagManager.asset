@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Protect
+  - Power
   layers:
   - Default
   - TransparentFX
