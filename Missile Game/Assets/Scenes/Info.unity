@@ -672,7 +672,8 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -275773992975392322, guid: be9676657068a1a4daa8fa0a39138452, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: be9676657068a1a4daa8fa0a39138452, type: 3}
 --- !u!1001 &329383210
 PrefabInstance:
@@ -791,7 +792,8 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -6152591941354768250, guid: ff46fd30c3cdde4439005cc9707ddd38, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ff46fd30c3cdde4439005cc9707ddd38, type: 3}
 --- !u!1 &432078927
 GameObject:
@@ -876,6 +878,19 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 329383210}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &693776426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693776425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6ece36efce2e8048af09b8dc5ae472e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
 --- !u!1 &786384338
 GameObject:
   m_ObjectHideFlags: 0
@@ -1230,6 +1245,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 325386478}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1090308720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1090308719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb30ea875cf42342896b465b6c9184f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  iceWaitTime: 2
 --- !u!1 &1126399547
 GameObject:
   m_ObjectHideFlags: 0
@@ -12325,7 +12354,7 @@ Transform:
   m_Children:
   - {fileID: 5211241944724752923}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!143 &5211241944742427763
 CharacterController:
@@ -12914,13 +12943,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   range: 100
-  fireRate: 5
+  setFireRate: 0
+  defaultFireRate: 5
+  chargedFireRate: 10
   eyes: {fileID: 926285601}
   impactAffect: {fileID: 2702688270280949126, guid: feb7df41a87483d4f9ade8f6578cbf56,
     type: 3}
   DefaultMuzzle: {fileID: 3869258486554565867}
   ChargedMuzzle: {fileID: 5373438559913025428}
   setMuzzle: {fileID: 0}
+  bulletPrefab: {fileID: 0}
+  bulletSpawn: {fileID: 0}
+  bulletLifetime: 1
+  bulletSpeed: 10
 --- !u!4 &5211241945690284736
 Transform:
   m_ObjectHideFlags: 0

@@ -7,12 +7,12 @@ public class LightPower : MonoBehaviour, IPowerup
     public void OnActivation()
     {
         repairLight();
-        destroyed = true;
+        //destroyed = true;
         Destroy(gameObject);
     }
 
     public GameManager gameManager;
-    bool destroyed = false;
+    //bool destroyed = false;
 
     public void repairLight()
     {
@@ -21,6 +21,11 @@ public class LightPower : MonoBehaviour, IPowerup
             lightToFix = findMissing(gameManager.Protect1go, gameManager.Protect2go, gameManager.Protect3go);
             lightToFix.SetActive(true);
             Debug.Log("Repairing " + lightToFix.name);
+            foreach (GameObject eachEnemy in gameManager.enemies)
+            {
+                eachEnemy.GetComponent<target>().invokeSeek();
+            }
+            gameManager.GetComponent<GameManager>().updateActiveSignals();
         }
         else
         {

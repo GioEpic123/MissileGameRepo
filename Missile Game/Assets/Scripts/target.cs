@@ -5,6 +5,7 @@ using UnityEngine;
 public class target : MonoBehaviour, IDamagable<float>
 {
     public GameManager gameManager;
+    public GameObject player;
     //For use with taking damage. Each enemy prefab has their own modified health
     public float health = 50f;
     //For use of movement. ForwardForce is their movement speed,
@@ -18,31 +19,21 @@ public class target : MonoBehaviour, IDamagable<float>
     public void OnTakeDamage(float DamageTaken)
     {
         TakeDamage(DamageTaken);
+        if (floatingTextPrefab)
+        {
+            showFloatingText();
+        }
     }
 
-
-    //Movement Is in Update, Moves towards player at FORWARDFORCE speed
-    void Update()
+    public GameObject floatingTextPrefab;
+    public GameObject go;
+    void showFloatingText()
     {
-        //Only Seeks if current closestlight is inactive
-        if (!(closestLight.gameObject.activeSelf))
-        {
-            Seek();
-            Debug.Log(gameObject.name + " is Re-Seeking");
-        }
-
-
-        //A smoother version of LookAt, instead using Slerp to smoothly transition rotation.
-        //Float rotationSpeed affects how fast they change direction.
-        Quaternion targetRotation = Quaternion.LookRotation(closestLight.transform.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        //Move In forward direction, towards closestLight
-        transform.position += transform.forward * forwardForce * Time.deltaTime;
-
-        if (gameObject.transform.position.y <= -5)
-        {
-            Destroy(gameObject);
-        }
+        Vector3 fixedPos = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
+        //go = Instantiate(floatingTextPrefab, transform.position, Quaternion.LookRotation(player.transform.position), transform);
+        go = Instantiate(floatingTextPrefab, fixedPos, Quaternion.identity, transform);
+        go.GetComponent<TextMesh>().text = "" + health;
+ 
     }
 
 
@@ -52,7 +43,14 @@ public class target : MonoBehaviour, IDamagable<float>
         health -= amount;
         if (health <= 0f)
         {
-            Die();
+            if (!isBomber)
+            {
+                Die();
+            }
+            else
+            {
+                Explode();
+            } 
         }
     }
     public bool destroyed = false;
@@ -68,6 +66,15 @@ public class target : MonoBehaviour, IDamagable<float>
         GameManager.Instance.scoreCount++;
         spawnDrop();
 
+    }
+
+    public GameObject radiusSphere;
+    void Explode()
+    {
+        Die();
+        GameObject rad = Instantiate(radiusSphere);
+        rad.transform.position = gameObject.transform.position;
+        
     }
 
     void spawnDrop()
@@ -95,12 +102,46 @@ public class target : MonoBehaviour, IDamagable<float>
         nextChance = gameManager.location.Next(0, 101); //uses the random generator used in randomized spawning, to find a chance to drop ice.
 
     }
+    //UPDATE
+    //Movement Is in Update, Moves towards player at FORWARDFORCE speed
+    void Update()
+    {
+        //Only Seeks if current closestlight is inactive
+        if (!(closestLight.gameObject.activeSelf))
+        {
+            if (Prot1go.activeSelf || Prot2go.activeSelf || Prot3go.activeSelf)
+            {
+                Seek();
+                Debug.Log(gameObject.name + " is Re-Seeking");
+            }
+
+        }
+
+        //A smoother version of LookAt, instead using Slerp to smoothly transition rotation.
+        //Float rotationSpeed affects how fast they change direction.
+        Quaternion targetRotation = Quaternion.LookRotation(closestLight.transform.position - transform.position);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        //Move In forward direction, towards closestLight
+        transform.position += transform.forward * forwardForce * Time.deltaTime;
+
+        if (gameObject.transform.position.y <= -5)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     //RUDIMENTARY AI--Enemy will seek the closest of the 3 lights, Prot1,Prot2, & Prot3
 
     //Start- Will assign all Protection Game Objects(Prot1go, etc...) and their transforms as Prots(Prot1, etc)  
 
     void Start()
     {
+        if(gameObject.transform.childCount > 0)
+        {
+            if(gameObject.transform.GetChild(0).name == "BombEye")
+                isBomber = true;
+            
+        }
         gameManager = GameManager.Instance;
         //Finds all Protection Objects, assigns them, and then looks for them.
         Prot1go = gameManager.Protect1go;
@@ -118,9 +159,11 @@ public class target : MonoBehaviour, IDamagable<float>
         powerFastFire = GameManager.Instance.powerFastFireGo;
         powerLightRepair = GameManager.Instance.powerLightRepair;
         StartCoroutine(checkForChance());
+        player = gameManager.gun.gameObject;
+        radiusSphere = gameManager.blastRad;
     }
 
-
+    bool isBomber = false;
 
     //Transforms for position tracking
     public Transform closestLight;
@@ -131,6 +174,11 @@ public class target : MonoBehaviour, IDamagable<float>
     public GameObject Prot1go;
     public GameObject Prot2go;
     public GameObject Prot3go;
+
+    public void invokeSeek()
+    {
+        Seek();
+    }
 
     void Seek()
     {

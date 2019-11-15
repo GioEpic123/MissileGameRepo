@@ -167,11 +167,11 @@ GameObject:
   - component: {fileID: 2815157086223505399}
   - component: {fileID: 2815157086223505393}
   - component: {fileID: 2815157086223505394}
-  - component: {fileID: 3850253354360759706}
   - component: {fileID: 2815157086223505388}
   - component: {fileID: 2815157086223505392}
   - component: {fileID: 1619409144483228172}
   - component: {fileID: 2961616469720541394}
+  - component: {fileID: 3429266010117553764}
   m_Layer: 0
   m_Name: PowerGun
   m_TagString: Power
@@ -245,20 +245,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &3850253354360759706
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2815157086223505390}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!108 &2815157086223505388
 Light:
   m_ObjectHideFlags: 0
@@ -357,6 +343,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FFwaitTime: 5
   gameManager: {fileID: 0}
+--- !u!135 &3429266010117553764
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2815157086223505390}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.58661664
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8046045516319506159
 GameObject:
   m_ObjectHideFlags: 0

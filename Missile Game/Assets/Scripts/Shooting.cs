@@ -4,7 +4,6 @@ using System.Collections;
 public class Shooting : MonoBehaviour {
 
     public float damage = 10f;
-    public float range = 100f;
     public float setFireRate;
     public float defaultFireRate = 5f;
     public float chargedFireRate = 10f;
@@ -48,6 +47,7 @@ public class Shooting : MonoBehaviour {
     
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+    public Transform[] bulletSpawns;
     public float bulletLifetime = 1f;
     public float bulletSpeed = 10f;
     
@@ -60,26 +60,42 @@ public class Shooting : MonoBehaviour {
     {
         setMuzzle.Play();
         spawnBullet();
+
     }
+
+    public int wOffset = 0;
+    public int xOffset = 0;
+    public int yOffset = 0;
+    public int zOffset = 0;
 
     void spawnBullet()//All this To spawn a bullet and send it where you Aim
     {
-        GameObject bullet = Instantiate(bulletPrefab);
-        Physics.IgnoreCollision(bullet.GetComponent<Collider>(),
-            bulletSpawn.parent.GetComponent<Collider>());//Dont count it when you hit the gun
-        GameObject[] mutes = new GameObject[] {GameManager.Instance.Protect1go, GameManager.Instance.Protect1go,
-            GameManager.Instance.Protect1go};
-        foreach(GameObject obj in mutes)
+        foreach(Transform spawn in bulletSpawns)
         {
-            Physics.IgnoreCollision(bullet.GetComponent<Collider>(),
-            obj.transform.GetChild(1).GetComponent<Collider>());
-        }
-        bullet.transform.position = bulletSpawn.position;
+            GameObject bullet = Instantiate(bulletPrefab);
+            if(!(spawn.parent.GetComponent<Collider>() == null))//Dont count it when you hit the gun, if the gun has a collider
+            {
+                Physics.IgnoreCollision(bullet.GetComponent<Collider>(),
+                spawn.parent.GetComponent<Collider>());
+            }
+            GameObject[] mutes = new GameObject[] {GameManager.Instance.Protect1go, GameManager.Instance.Protect2go,
+            GameManager.Instance.Protect3go};
+            foreach (GameObject obj in mutes)
+            {
+                Physics.IgnoreCollision(bullet.GetComponent<Collider>(),
+                obj.transform.GetChild(1).GetComponent<Collider>());
+            }
+            bullet.transform.position = spawn.position;
 
-        Vector3 rotation = bullet.transform.rotation.eulerAngles;
-        bullet.transform.rotation = Quaternion.Euler(rotation.x, transform.eulerAngles.y, rotation.z);
-        bullet.GetComponent<Rigidbody>().AddForce(bulletSpawn.forward * bulletSpeed, ForceMode.Impulse);
-        StartCoroutine(destroyAfterLifetime(bullet, bulletLifetime));
+            Vector3 rotation = bullet.transform.rotation.eulerAngles;
+            //bullet.transform.rotation = Quaternion.Euler(transform.eulerAngles.x, rotation.y, rotation.z);
+            //bullet.transform.rotation = Quaternion.Euler(rotation.x, transform.eulerAngles.y, rotation.z);
+            //Quaternion fixedRot = new Quaternion(transform.rotation.x + xOffset,transform.rotation.y,transform.rotation.z + zOffset,transform.rotation.w + wOffset);     //(transform.rotation.x, transform.rotation.y, transform.rotation.z)
+            bullet.transform.rotation = transform.rotation;
+            //bullet.transform.rotation = fixedRot;
+            bullet.GetComponent<Rigidbody>().AddForce(spawn.forward * bulletSpeed, ForceMode.Impulse);
+            StartCoroutine(destroyAfterLifetime(bullet, bulletLifetime));
+        } 
     }
 
     public void impact(GameObject hit)

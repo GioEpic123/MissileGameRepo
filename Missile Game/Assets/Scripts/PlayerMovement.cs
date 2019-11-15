@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     void Movement()
     {
         //Checks to make sure game isn't paused first
-        if (!gameManager.gamePaused)
+        if (!gameManager.gamePaused) 
         {
             
             //Rotation inputted, and clamped between two values
@@ -40,8 +40,16 @@ public class PlayerMovement : MonoBehaviour
             roty -= Input.GetAxis("Mouse Y") * sensitivity;
             roty = Mathf.Clamp(roty, -downClamp, upClamp);
 
-            //rotates actual character about the X axis
-            transform.Rotate(0, rotx, 0);
+            if (!gameManager.gameHasEnded)
+            {
+                //rotates actual character about the X axis if game is active
+                transform.Rotate(0, rotx, 0);
+            }
+            else
+            {
+                eyes.transform.Rotate(0, rotx, 0);
+            }
+
             //rotates the camera "eyes" about Z axis(up & down)
             eyes.transform.localRotation = Quaternion.Euler(roty, 90, 0);
 

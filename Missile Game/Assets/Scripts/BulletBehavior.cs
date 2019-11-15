@@ -40,17 +40,28 @@ public class BulletBehavior : MonoBehaviour
      */
 
     private void OnTriggerEnter(Collider other)
-    {   
-        Gun = GameManager.Instance.gun;
-        Debug.Log("Hit " + other.gameObject.name);
-        impact(other);
-        Destroy(gameObject);
-        //Impact Affect Below
-        GameObject impactGo = Instantiate(impactAffect, gameObject.transform.position, gameObject.transform.rotation);
-        impactGo.transform.LookAt(Gun.transform);
-        impactGo.SetActive(true);
-        Destroy(impactGo, 1f);
-        
+    {
+        if (other.GetComponent<BulletBehavior>() == null)
+        {
+            Gun = GameManager.Instance.gun;
+            Debug.Log("Hit " + other.gameObject.name);
+            impact(other);
+            Destroy(gameObject);
+            //Impact Affect Below
+            Vector3 fixedpos = gameObject.transform.position;
+            if (other.name == "FLOOR")
+            {
+                //Adjust to terrain...?
+            }
+            GameObject impactGo = Instantiate(impactAffect, fixedpos, gameObject.transform.rotation);
+            impactGo.transform.LookAt(Gun.transform);
+            impactGo.SetActive(true);
+            Destroy(impactGo, 1f);
+        }
+        else
+        {
+            Debug.Log("Hit bullet, Ignoring");
+        }
     }
     
     

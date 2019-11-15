@@ -12,8 +12,6 @@ public class GunPower : MonoBehaviour, IPowerup
     }
 
     bool destroyed = false;
-    public float defaultFireRate;
-    public float chargedFireRate = 10f;
 
     public float FFwaitTime = 5f;
     public void fastFire(GameObject mGun)

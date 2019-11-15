@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
+    public GameObject[] enemies; //Array that Contains all Active objs with "Enemy" Tag
 
     //Makes an instance of the Manager that stays active within the scene
     private static GameManager _instance;
@@ -35,6 +36,9 @@ public class GameManager : MonoBehaviour {
         Time.timeScale = 1;
         scoreCount = 0;
         location = new System.Random();
+        redLight = enemy.GetComponent<Light>().color;
+        greenLight = signal1.GetComponent<Light>().color;
+        setGlows();
     }
 
     //Update - Constantly checks if game is over, notifies console if so & ends game.
@@ -43,33 +47,120 @@ public class GameManager : MonoBehaviour {
     bool canCheck = true;
     void Update()
     {
-        if (!(Protect1go.activeSelf || Protect2go.activeSelf || Protect3go.activeSelf))
-        {
-            Debug.Log("Ending Game...");
-            EndGame();
-        }
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        waveLength = enemies.Length;
 
-        //Checks if Enemies are present, if not then it starts up a new wave
-        if ((GameObject.FindGameObjectsWithTag("Enemy").Length == 0) && canCheck)
+        if ((waveLength == 0) && canCheck)
         {
             canCheck = false;
             waveCount++;
             spawner();
-
-
         }
-
-        //Updates the Number of Enemies to display on screen.
-        waveLength = GameObject.FindGameObjectsWithTag("Enemy").Length;
         enemiesRemainHUD.GetComponent<Text>().text = "Remaining: " + waveLength;
         //Updates the Wave Count
         waveCounterHUD.GetComponent<Text>().text = "" + (waveCount + 1);
         //Updates Player's Score
         scoreCountHUD.GetComponent<Text>().text = "Score: " + scoreCount;
     }
+    //Signals On Body
+    public GameObject signal1;
+    bool oneIsActive = true;
+    public GameObject signal2;
+    bool twoIsActive = true;
+    public GameObject signal3;
+    bool threeIsActive = true;
+    public Material RedGlow;
+    public Material GreenGlow;
+    Color redLight;
+    Color greenLight;
+   
+    void setGlows()
+    {
+        signal1.GetComponent<Renderer>().material.SetColor("_Color", GreenGlow.color);
+        signal2.GetComponent<Renderer>().material.SetColor("_Color", GreenGlow.color);
+        signal3.GetComponent<Renderer>().material.SetColor("_Color", GreenGlow.color);
+    }
+
+
+    public void updateActiveSignals()
+    {
+        if (!(Protect1go.activeSelf || Protect2go.activeSelf || Protect3go.activeSelf))
+        {
+            Debug.Log("Ending Game...");
+            EndGame();
+        }
+        else
+        {
+            //Updates Prot1
+            if (!(Protect1go.activeSelf))
+            {
+                if (oneIsActive)
+                {
+                    oneIsActive = false;
+                    deactivate(signal1);
+                }
+            }
+            else
+            {
+                if (!oneIsActive)
+                {
+                    oneIsActive = true;
+                    activate(signal1);
+                }
+            }
+            //Updates Prot2
+            if (!(Protect2go.activeSelf))
+            {
+                if (twoIsActive)
+                {
+                    twoIsActive = false;
+                    deactivate(signal2);
+                }
+            }
+            else
+            {
+                if (!twoIsActive)
+                {
+                    twoIsActive = true;
+                    activate(signal2);
+                }
+            }
+            //Updates Prot3
+            if (!(Protect3go.activeSelf))
+            {
+                if (threeIsActive)
+                {
+                    threeIsActive = false;
+                    deactivate(signal3);
+                }
+            }
+            else
+            {
+                if (!threeIsActive)
+                {
+                    threeIsActive = true;
+                    activate(signal3);
+                }
+            }
+        }
+    }
+
+    void activate(GameObject signal)
+    {
+        signal.GetComponent<Renderer>().material.SetColor("_Color", GreenGlow.color);
+        signal.GetComponent<Light>().color = greenLight;
+    }
+
+    void deactivate(GameObject signal)
+    {
+        signal.GetComponent<Renderer>().material.SetColor("_Color", RedGlow.color);
+        signal.GetComponent<Light>().color = redLight;
+    }
+    //The Radius Used by explosions
+    public GameObject blastRad;
 
     //Power-Ups-------------
-    public GameObject[] enemies; //Array that Contains all Active objs with "Enemy" Tag
+    
     float Duration = 0;
     public GameObject powerLightRepair;
 
@@ -86,7 +177,6 @@ public class GameManager : MonoBehaviour {
             {
                 Duration = powerUp.GetComponent<IcePower>().iceWaitTime;
                 iceInitiated = true;
-                enemies = GameObject.FindGameObjectsWithTag("Enemy");//Gets an array with ALL enemiesS
                 powerUp.GetComponent<IcePower>().freeze();
                 iceDecal.SetActive(true);//Activates decal on player
                 StartCoroutine(iceCooldown(powerUp));//START THE DURATION
@@ -100,7 +190,6 @@ public class GameManager : MonoBehaviour {
         else
         {
             Debug.Log("Unfreezing");
-            enemies = GameObject.FindGameObjectsWithTag("Enemy");//Gets an array with ALL enemiesS
             foreach (GameObject eachEnemy in enemies)
             {
                 powerFreezeGo.GetComponent<IcePower>().unFreeze(eachEnemy);
@@ -181,10 +270,10 @@ public class GameManager : MonoBehaviour {
     public GameObject scoreCountHUD;
     //Spawning----
     public int scoreCount;//How many enemies We've killed.
-    int waveLength;// How many enemies are present 
+    int waveLength = 3;// How many enemies are present 
     public int waveCount = 0; // Which wave we're on
     public GameObject enemy; //Cube Enemy Prefab
-    public GameObject roundEnemy; //Round Enemy Prefab
+    public GameObject largeEnemy; //Round Enemy Prefab
     Vector3 myVector; //A vector to spawn enemies 
     public System.Random location; //A random Object for use with spawning
     [HideInInspector]
@@ -223,19 +312,19 @@ public class GameManager : MonoBehaviour {
                 deltaZ = -1;
             }
 
-            //Spawns 2 RoundEnemies and 1 Cube in each section for every wave.
+            //Spawns 2 enemies & 1 large enemy for Every Quadrant, per wave (8 enemies & 4 large * wave number)
             for (int j = 0; j < waveCount; j++)
             {
                 //Spawns 2 Round here
                 for (int k = 0; k < 2; k++)
                 {
                     myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
-                    GameObject round = Instantiate(roundEnemy);
+                    GameObject round = Instantiate(enemy);
                     round.transform.position = myVector;
                 }
                 //Spawns 1 Cube Here
                 myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
-                GameObject cube = Instantiate(enemy);
+                GameObject cube = Instantiate(largeEnemy);
                 cube.transform.position = myVector;
             }
         }
@@ -256,7 +345,7 @@ public class GameManager : MonoBehaviour {
     public GameObject finalScoreCount;
     public GameObject crossHair;
     //gameHasEnded tells us if the game is over
-    bool gameHasEnded = false;
+    public bool gameHasEnded = false;
     public void EndGame()
     {
         if(gameHasEnded == false)
