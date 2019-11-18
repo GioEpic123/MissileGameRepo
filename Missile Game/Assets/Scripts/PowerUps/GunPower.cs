@@ -7,11 +7,13 @@ public class GunPower : MonoBehaviour, IPowerup
     public void OnActivation()
     {
         gameManager.ff(gameObject);
-        destroyed = true;
         Destroy(gameObject);
     }
-
-    bool destroyed = false;
+    public void OnExploded()
+    {
+        Destroy(gameObject);
+        Debug.Log("FastFire Expolded!");
+    }
 
     public float FFwaitTime = 5f;
     public void fastFire(GameObject mGun)

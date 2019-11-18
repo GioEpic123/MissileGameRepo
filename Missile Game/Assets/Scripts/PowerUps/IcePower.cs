@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class IcePower : MonoBehaviour, IPowerup
 {
+    //Instance Methods
     public void OnActivation()
     {
         gameManager.ice(gameObject);
-        destroyed = true;
         Destroy(gameObject);
+    }
+    public void OnExploded()
+    {
+        Destroy(gameObject);
+        Debug.Log("Ice Expolded!");
     }
 
     public GameManager gameManager;
-    bool destroyed = false;
 
     public float iceWaitTime = 2f;
 
@@ -22,16 +26,26 @@ public class IcePower : MonoBehaviour, IPowerup
         Debug.Log("Freezing");
         foreach (GameObject eachEnemy in gameManager.enemies)
         {
-            eachEnemy.GetComponent<target>().forwardForce = 0;
+            eachEnemy.GetComponent<Targeting>().freeze();
             eachEnemy.GetComponent<Light>().color = Color.blue;
-            eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+
+            if (eachEnemy.GetComponent<Renderer>() != null)
+                eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+            else
+                eachEnemy.gameObject.transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+
+
         }
     }
     public void unFreeze(GameObject eachEnemy)
     {
-        eachEnemy.GetComponent<target>().forwardForce = eachEnemy.GetComponent<target>().FINALFORCE;
+        eachEnemy.GetComponent<Targeting>().unFreeze();
         eachEnemy.GetComponent<Light>().color = eachEnemy.GetComponent<target>().redLight;
-        eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);
+
+        if (eachEnemy.GetComponent<Renderer>() != null)
+            eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);
+        else
+            eachEnemy.gameObject.transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);
     }
 
     void Start()

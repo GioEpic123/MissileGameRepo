@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
     //Makes an instance of the Manager that stays active within the scene
     private static GameManager _instance;
 
+    public Animation deathAnim;
+
     public static GameManager Instance
     {
         get { return _instance; }
@@ -274,6 +276,7 @@ public class GameManager : MonoBehaviour {
     public int waveCount = 0; // Which wave we're on
     public GameObject enemy; //Cube Enemy Prefab
     public GameObject largeEnemy; //Round Enemy Prefab
+    public GameObject bomber; //Bomber enemy prefab
     Vector3 myVector; //A vector to spawn enemies 
     public System.Random location; //A random Object for use with spawning
     [HideInInspector]
@@ -326,6 +329,10 @@ public class GameManager : MonoBehaviour {
                 myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
                 GameObject cube = Instantiate(largeEnemy);
                 cube.transform.position = myVector;
+                //Spawns 1 Bomber Here
+                myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+                GameObject bomb = Instantiate(bomber);
+                bomb.transform.position = myVector;
             }
         }
         //After Spawning is done, this method Gives Update Method Permission to check if round is over.

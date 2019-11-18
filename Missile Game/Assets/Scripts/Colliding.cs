@@ -23,7 +23,7 @@ public class Colliding : MonoBehaviour, IDamagable<float>
     public void OnTakeDamage(float DamageTaken)
     {
         Debug.Log(assignedProtect.name + " hit by bomb.");
-        if(DamageTaken > 500)
+        if(DamageTaken >= 60)
         {
             destroyProtect();
         }

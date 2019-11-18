@@ -74,7 +74,7 @@ public class MenuManager : MonoBehaviour
     public void StartLevel()
     {
         Debug.Log("Starting First Level");
-        SceneManager.LoadScene("Level0");
+        SceneManager.LoadScene("Level 0");
 
     }
 

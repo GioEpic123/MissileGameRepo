@@ -10,6 +10,11 @@ public class LightPower : MonoBehaviour, IPowerup
         //destroyed = true;
         Destroy(gameObject);
     }
+    public void OnExploded()
+    {
+        Destroy(gameObject);
+        Debug.Log("LightRepair Expolded!");
+    }
 
     public GameManager gameManager;
     //bool destroyed = false;

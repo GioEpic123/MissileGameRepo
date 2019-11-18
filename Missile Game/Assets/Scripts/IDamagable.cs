@@ -10,5 +10,7 @@ public interface IDamagable<T>
 public interface IPowerup
 {
     void OnActivation();
+    void OnExploded();
+
 }
-  
+
