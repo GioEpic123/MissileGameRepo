@@ -7,12 +7,12 @@ public class target : MonoBehaviour, IDamagable<float>
     public GameManager gameManager;
     public GameObject player;
     //For use with taking damage. Each enemy prefab has their own modified health
-    public float health = 50f;
+    public float startHealth;
+    public float health = 50;
     //For use of movement. ForwardForce is their movement speed,
     //rotationSpeed is how fast they change direction.
     //public float rotationSpeed = 3f; -- Delete later
     public Color redLight;
-    public Color redMaterial;
     //Transforms for position tracking
     public Transform closestLight;
     int nextChance = 0; //The enemy's current chance for a drop
@@ -23,16 +23,19 @@ public class target : MonoBehaviour, IDamagable<float>
 
     void Start()
     {
+
         //Things That Must Be Initialized After Spawning...
+        startHealth = health;
         gameManager = GameManager.Instance;
-        redLight = gameObject.GetComponent<Light>().color;
-        redMaterial = gameObject.GetComponent<Renderer>().material.color;
+        redLight = gameObject.transform.GetChild(0).GetComponent<Light>().color;
+        anim = gameObject.GetComponent<Animator>();
+        //redMaterial = gameObject.GetComponent<Renderer>().material.color;
         player = gameManager.gun.gameObject;
 
         //Calls some funtions After Spawning...
         StartCoroutine(checkForChance());
 
-        //anim = gameObject.GetComponent<Animation>();
+
     }
 
     //UPDATE
@@ -70,11 +73,15 @@ public class target : MonoBehaviour, IDamagable<float>
 
     public void OnTakeDamage(float DamageTaken)
     {
-        TakeDamage(DamageTaken);
-        if (floatingTextPrefab)
+        if (!destroyed)
         {
-            showFloatingText();
+            TakeDamage(DamageTaken);
+            if (floatingTextPrefab)
+            {
+                showFloatingText();
+            }
         }
+        
     }
 
     public GameObject floatingTextPrefab;
@@ -93,7 +100,7 @@ public class target : MonoBehaviour, IDamagable<float>
     public void TakeDamage(float amount)
     {
         health -= amount;
-        if (health <= 0f)
+        if (health <= 0)
         {
                 Die();       
         }
@@ -103,16 +110,24 @@ public class target : MonoBehaviour, IDamagable<float>
     //Kills the Enemy when conditions are met, and incriments Player's Score
     void Die()
     {
-        //anim.Play();
-        //Destroy(gameObject, 0.45f);
         destroyed = true;
-        Destroy(gameObject);
-        GameManager.Instance.scoreCount++;
-        spawnDrop();
+        GetComponent<Targeting>().freeze();
         if (gameObject.GetComponent<Bomber>())
+        {
             gameObject.GetComponent<Bomber>().Explode();
+            Destroy(gameObject);
+        }
+        else
+        {
+            anim.SetBool("isDead", true);
+            Destroy(gameObject, .5f);
+        } 
+        GameManager.Instance.scoreCount = startHealth + GameManager.Instance.scoreCount;
+        spawnDrop();
+        
+        
     }
-    //public Animation anim;
+    Animator anim;
 
     void spawnDrop()
     {

@@ -20,32 +20,51 @@ public class IcePower : MonoBehaviour, IPowerup
 
     public float iceWaitTime = 2f;
 
-
     public void freeze()
     {
         Debug.Log("Freezing");
         foreach (GameObject eachEnemy in gameManager.enemies)
         {
-            eachEnemy.GetComponent<Targeting>().freeze();
-            eachEnemy.GetComponent<Light>().color = Color.blue;
+            eachEnemy.gameObject.GetComponent<Targeting>().freeze();
+            eachEnemy.transform.GetChild(0).GetComponent<Light>().color = Color.blue;
 
+            /*--Trying to get blue rendering working
+            if(eachEnemy.GetComponent<Renderer>())
+                eachEnemy.GetComponent<Renderer>().material.color = gameManager.enemyFrozen.color;
+            else
+                eachEnemy.transform.GetChild(0).GetComponent<Renderer>().material.color = gameManager.enemyFrozen.color;
+            /*
             if (eachEnemy.GetComponent<Renderer>() != null)
                 eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
             else
-                eachEnemy.gameObject.transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+                eachEnemy.gameObject.transform.GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.blue);*/
 
 
         }
     }
+
+
     public void unFreeze(GameObject eachEnemy)
     {
-        eachEnemy.GetComponent<Targeting>().unFreeze();
-        eachEnemy.GetComponent<Light>().color = eachEnemy.GetComponent<target>().redLight;
+        if (!eachEnemy.GetComponent<target>().destroyed)
+        {
+            eachEnemy.GetComponent<Targeting>().unFreeze();
+            eachEnemy.transform.GetChild(0).GetComponent<Light>().color = eachEnemy.GetComponent<target>().redLight;
+        }
+            
 
+        /*--Trying to get the blue renderer working :/
+        if (eachEnemy.GetComponent<Renderer>())
+            eachEnemy.GetComponent<Renderer>().material.color = gameManager.enemyRed.color;
+        else
+            eachEnemy.transform.GetChild(0).GetComponent<Renderer>().material.color = gameManager.enemyRed.color;
+
+        /*eachEnemy.transform.GetChild(0).GetComponent<Renderer>().material.color = gameManager.enemyRed.color;
+        /*
         if (eachEnemy.GetComponent<Renderer>() != null)
             eachEnemy.GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);
         else
-            eachEnemy.gameObject.transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);
+            eachEnemy.gameObject.transform.GetChild(1).GetComponent<Renderer>().material.SetColor("_Color", eachEnemy.GetComponent<target>().redMaterial);*/
     }
 
     void Start()

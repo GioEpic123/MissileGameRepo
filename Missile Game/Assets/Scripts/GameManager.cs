@@ -9,8 +9,6 @@ public class GameManager : MonoBehaviour {
     //Makes an instance of the Manager that stays active within the scene
     private static GameManager _instance;
 
-    public Animation deathAnim;
-
     public static GameManager Instance
     {
         get { return _instance; }
@@ -38,10 +36,20 @@ public class GameManager : MonoBehaviour {
         Time.timeScale = 1;
         scoreCount = 0;
         location = new System.Random();
-        redLight = enemy.GetComponent<Light>().color;
+        redLight = enemy.transform.GetChild(0).GetComponent<Light>().color;
         greenLight = signal1.GetComponent<Light>().color;
         setGlows();
     }
+
+    //Testing
+
+
+    public Material enemyRed;
+    public Material enemyFrozen;
+
+    //Done
+
+
 
     //Update - Constantly checks if game is over, notifies console if so & ends game.
     //Constantly checks if wave is over to spawn next wave but only if canCheck = true 
@@ -166,6 +174,7 @@ public class GameManager : MonoBehaviour {
     float Duration = 0;
     public GameObject powerLightRepair;
 
+
     //Ice
     public GameObject powerFreezeGo;//A Gameobject that holds freeze powerup prefab so enemies can drop it
     bool iceInitiated = false;
@@ -187,7 +196,6 @@ public class GameManager : MonoBehaviour {
             {
                 Debug.Log("Already Froze!");
             }
-                
         }
         else
         {
@@ -271,7 +279,7 @@ public class GameManager : MonoBehaviour {
     public GameObject waveCounterHUD;
     public GameObject scoreCountHUD;
     //Spawning----
-    public int scoreCount;//How many enemies We've killed.
+    public float scoreCount;//How many enemies We've killed.
     int waveLength = 3;// How many enemies are present 
     public int waveCount = 0; // Which wave we're on
     public GameObject enemy; //Cube Enemy Prefab
@@ -284,6 +292,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector]
     public int deltaZ; //Change in Z Coords for same reason
 
+    /*
     void spawner()
     {
         //Spawns in 4 Sections, one at a time. 
@@ -337,6 +346,119 @@ public class GameManager : MonoBehaviour {
         }
         //After Spawning is done, this method Gives Update Method Permission to check if round is over.
         canCheck = true;
+    }*/
+
+    void spawner()
+    {
+        
+        //Spawns in 4 Sections, one at a time. 
+        //The for loop corrects the coordinates each ideration, so the enemies are only spawned in their section.
+        for (int i = 0; i < 4; i++)
+        {
+            if (i == 0)
+            {
+                //change vals for UpRight Corner. 
+                deltaX = 1;
+                deltaZ = 1;
+            }
+            else if (i == 1)
+            {
+                //Change vals for UpLft
+                deltaX = -1;
+                deltaZ = 1;
+            }
+            else if (i == 2)
+            {
+                //Change vals for lowLf
+                deltaX = -1;
+                deltaZ = -1;
+            }
+            else
+            {
+                //Change vals for lowRt
+                deltaX = 1;
+                deltaZ = -1;
+            }
+
+            if (waveCount >= 5)  //After round 5,for each wave n each quad gets (n-1)reg + (n/2)lg + (n/2)bomb
+            {
+                for (int k = 0; k < (waveCount - 1); k++)
+                {
+                    myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+                    GameObject cube = Instantiate(enemy);
+                    cube.transform.position = myVector;
+                }
+                for (int l = 0; l < (waveCount / 2); l++)
+                {
+                    //Spawns 1 Cube Here
+                    myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+                    GameObject large = Instantiate(largeEnemy);
+                    large.transform.position = myVector;
+                    //Spawns 1 Bomber Here
+                    myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+                    GameObject bomb = Instantiate(bomber);
+                    bomb.transform.position = myVector;
+                }
+
+            }
+            else
+            {
+                preSetSpawn();
+            }
+        }
+        //After Spawning is done, this method Gives Update Method Permission to check if round is over.
+        canCheck = true;
+    }
+
+    int numR;
+    int numL;
+    int numB;
+
+    void preSetSpawn()
+    {
+        if (waveCount == 1)//on wave 2 - 2 Reg,1 Lg, 1 Bomb
+        {
+            numR = 2;
+            numL = 1;
+            numB = 1;
+        }
+        else if (waveCount == 2)//on wave 3 - 3 Reg,1 Lg, 1 Bomb
+        {
+            numR = 3;
+            numL = 1;
+            numB = 1;
+        }
+        else if (waveCount == 3)//4r 2l 1b
+        {
+            numR = 4;
+            numL = 2;
+            numB = 1;
+        }
+        else
+        {
+            numR = 4;
+            numL = 2;
+            numB = 2;
+
+        }
+        for (int k = 0; k < numR; k++)
+        {
+            myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+            GameObject cube = Instantiate(enemy);
+            cube.transform.position = myVector;
+        }
+        for (int l = 0; l < numL; l++)
+        {
+            myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+            GameObject large = Instantiate(largeEnemy);
+            large.transform.position = myVector;
+        }
+        for (int m = 0; m < numB; m++)
+        {
+            myVector = new Vector3((location.Next(27, 49) * deltaX), 10, (location.Next(27, 49) * deltaZ));
+            GameObject bomb = Instantiate(bomber);
+            bomb.transform.position = myVector;
+        }
     }
 
     //Protection Objects- Objects that need to be protected. Set in inspector.
