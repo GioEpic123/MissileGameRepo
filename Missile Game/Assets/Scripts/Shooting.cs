@@ -25,6 +25,14 @@ public class Shooting : MonoBehaviour {
         setFireRate = defaultFireRate;
     }
 
+    private void Start()
+    {
+        aud = GetComponent<AudioSource>();
+    }
+    //For Audio
+    AudioSource aud;
+
+
     void Update () {
         /*
 		if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
@@ -60,6 +68,7 @@ public class Shooting : MonoBehaviour {
     {
         setMuzzle.Play();
         spawnBullet();
+        aud.Play();
 
     }
 

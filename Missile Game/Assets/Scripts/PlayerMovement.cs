@@ -20,12 +20,36 @@ public class PlayerMovement : MonoBehaviour
     //References Movement here
     private float rotx, roty, gunRoty, vertVelocity;
 
-    private bool hasJumped;
-    private bool isCrouched;
-
     void Update()
     {
         Movement();
+    }
+
+    private void Start()
+    {
+        soundEnabled = GameManager.Instance.soundEnabled;
+    }
+
+    public void write()
+    {
+        GameManager.Instance.soundEnabled = soundEnabled;
+    }
+
+    public GameObject mainCam;
+    public bool soundEnabled = true;
+    //Maybe make a global sound handler...? If not, then the player is gonna have to deal with it :/
+    void toggleSound()
+    {
+        if (soundEnabled)
+        {
+            mainCam.GetComponent<AudioListener>().enabled = false;
+            soundEnabled = false;
+        }
+        else
+        {
+            mainCam.GetComponent<AudioListener>().enabled = false;
+            soundEnabled = true;
+        }
     }
 
 

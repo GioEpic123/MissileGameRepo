@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     public GameObject[] enemies; //Array that Contains all Active objs with "Enemy" Tag
+    public Material enemyRed;
+    public Material enemyFrozen;
 
     //Makes an instance of the Manager that stays active within the scene
     private static GameManager _instance;
@@ -39,16 +41,13 @@ public class GameManager : MonoBehaviour {
         redLight = enemy.transform.GetChild(0).GetComponent<Light>().color;
         greenLight = signal1.GetComponent<Light>().color;
         setGlows();
+
+        
     }
 
     //Testing
-
-
-    public Material enemyRed;
-    public Material enemyFrozen;
-
-    //Done
-
+    public bool soundEnabled = true;
+    
 
 
     //Update - Constantly checks if game is over, notifies console if so & ends game.
@@ -492,7 +491,7 @@ public class GameManager : MonoBehaviour {
             finalWaveCount.GetComponent<Text>().text = "" + (waveCount + 1);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = (true);
-
+            player.GetComponentInParent<PlayerMovement>().write();
         }
     }
 

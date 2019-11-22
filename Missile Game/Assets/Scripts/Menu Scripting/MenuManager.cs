@@ -11,6 +11,7 @@ public class MenuManager : MonoBehaviour
 
     void Start()
     {
+        player = GameManager.Instance.player;
         if (astheticDust.activeSelf)
             dustOn = true;
         else
@@ -56,11 +57,12 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Quiting to Main...");
         SceneManager.LoadScene("MainMenu");
     }
-    
 
+    public GameObject player;
 
     public void Restart()
     {
+        player.GetComponentInParent<PlayerMovement>().write();
         Debug.Log("Restarting");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Time.timeScale = 1;
